@@ -1,0 +1,28 @@
+#PBS -N scTagger_BC_Split
+#PBS -r n
+#PBS -l mem=20GB,walltime=00:30:00,ncpus=8
+#PBS -m ae
+#PBS -M user@email.com
+
+module load seqtk/1.3
+
+bclist='/working/lab_stevenL/jasminS/Nanopore2024/DoradoFastq/CM_EX_100722/CM_EX_100722_Barcodes.tsv'
+#match="CM_EX_100722_v3.6.0scTagger_matchTrie_BC.tsv"
+match="scTagger_matchTrie_BC.tsv"
+fastq="fastq.fastq.gz"
+
+
+tmp=$(wc -l <$bclist)
+for ((i=2; i<$tmp+1; i++))
+do
+#sed -n "$i,1p" $bclist > bc
+
+bc2=$(eval sed -n "$i,1p" $bclist)
+
+awk '$5 == "'${bc2%?}'"' ${match} | awk '{print $1}' > scTagger_readid.${bc2%?}.txt
+
+seqtk subseq $fastq scTagger_readid.${bc2%?}.txt > "${fastq%.fastq.gz}_${bc2%?}.fq" ;
+
+gzip "${fastq%.fastq.gz}_${bc2%?}.fq";
+
+done
