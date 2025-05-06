@@ -1,0 +1,18 @@
+
+###########
+#PBS -N Pileup
+#PBS -l ncpus=2,mem=35GB,walltime=01:40:00
+#PBS -m ae
+#PBS -M jasmin.straube@qimrberghofer.edu.au
+###########
+
+
+module load bcftools/1.19
+
+
+positions='SNPs.bed'
+genome='genome.fa'
+bams="*bam"
+
+bcftools mpileup --regions-file $positions -d 10000 --annotate FORMAT/AD,FORMAT/ADF,FORMAT/ADR,FORMAT/DP,FORMAT/SP,INFO/AD,INFO/ADF,INFO/ADR $bams --fasta-ref $genome |  bcftools query --format '%CHROM\t%POS\t%REF\t%ALT[\t%AD]\n' > SNPs
+
