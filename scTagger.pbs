@@ -1,0 +1,30 @@
+
+#PBS -N scTagger
+#PBS -r n
+#PBS -l mem=50GB,walltime=48:00:00,ncpus=8
+#PBS -m ae
+#PBS -M jasmin.straube@qimrberghofer.edu.au
+
+
+module load miniconda3/current
+source activate sctagger-env
+
+fastq="fastq.fastq.gz"
+barcodes="Barcodes.tsv"
+
+scTagger.py extract_lr_bc -r $fastq -t 8 -o ${fastq%.fastq.gz}scTagger_LR_BC.tsv.gz
+
+gzip -d ${fastq%.fastq.gz}scTagger_LR_BC.tsv.gz
+
+# Extract exact matching barcodes from long reads for use in matching based on frequency.
+
+scTagger.py extract_sr_bc_from_lr -i ${fastq%.fastq.gz}scTagger_LR_BC.tsv -o ${fastq%.fastq.gz}scTagger_SRfromLR_BC.tsv.gz -wl $barcodes
+
+gzip -d ${fastq%.fastq.gz}scTagger_SRfromLR_BC.tsv.gz
+
+
+scTagger.py match_trie -lr ${fastq%.fastq.gz}scTagger_LR_BC.tsv -sr ${fastq%.fastq.gz}scTagger_SRfromLR_BC.tsv -mr 2 -bl 16 -t 8 -o ${fastq%.fastq.gz}scTagger_matchTrie_BC.tsv.gz
+
+gzip -d ${fastq%.fastq.gz}scTagger_matchTrie_BC.tsv.gz
+
+conda deactivate
