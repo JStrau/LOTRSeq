@@ -1,0 +1,49 @@
+
+###########
+#PBS -N minimap
+#PBS -l ncpus=8,mem=82GB,walltime=10:00:00
+#PBS -m ae
+#PBS -M user@email.com
+###########
+
+
+module load samtools/1.20
+module load minimap2/2.27
+module load sambamba/1.0.1
+
+
+#FILE="/*.fq.gz"
+#arr=($FILE)
+#echo ${#arr[@]}
+#note linux array starts from 0
+#qsub -J 0-${#arr[@]} ~/Minimap_and_Filter.pbs
+
+
+ref="genome.fa"
+
+FILE="/*.fq.gz"
+arr=($FILE)
+fastq=( "${arr[${PBS_ARRAY_INDEX}]}" );
+
+#echo $fastq
+
+#map to reference
+minimap2 -L -ax splice $ref $fastq  > "${fastq%.fq.gz}.sam"
+
+# remove secondary, supplementary alignments and unmapped reads
+samtools view -S -b -F 2820 "${fastq%.fq.gz}.sam" > "${fastq%.fq.gz}.bam"
+
+#remove primary alignments with supplementary mappings
+sambamba view -h -f bam -F "[SA]==null" "${fastq%.fq.gz}.bam" -o "${fastq%.fq.gz}_filtered.bam"
+
+#sort bam
+samtools sort -o "${fastq%.fq.gz}_sorted.bam"  "${fastq%.fq.gz}_filtered.bam"
+
+#index bam
+samtools index "${fastq%.fq.gz}_sorted.bam"
+
+rm -rf "${fastq%.fq.gz}_filtered.bam"
+rm -rf "${fastq%.fq.gz}.bam"
+rm -rf "${fastq%.fq.gz}.sam"
+
+
