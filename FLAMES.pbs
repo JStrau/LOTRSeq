@@ -1,0 +1,11 @@
+module load FLAMES/774e16a
+source activate FLAMES
+
+#UMI 12
+#error 2
+barcodes="Barcodes.tsv"
+folder="/folder/to/input/fastq"
+match_cell_barcode $folder Flames/BCstats.txt Flames/Pooled_EC2_matches.fastq.gz $barcodes 2 12
+
+conda deactivate
+
