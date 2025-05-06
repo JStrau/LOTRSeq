@@ -1,0 +1,20 @@
+
+#PBS -N BLAZE_BC_Split
+#PBS -l mem=2GB,walltime=00:15:00,ncpus=2
+#PBS -m ae
+#PBS -M user@email.com
+
+#submit array job in console not in here otherwise you create a loop
+#qsub -J 2-$(wc -l $bclist | awk '{print $1}') BLAZE_Barcode_Split.pbs
+
+fastq="/path/to/fastq.fq.gz"
+bclist="ListOfBarcodes.tsv"
+
+i=${PBS_ARRAY_INDEX}
+
+bc2=$(eval sed -n "$i,1p" $bclist)
+
+zgrep -A 3 "^@${bc2}" $fastq | sed '/^--$/d' > "${fastq%.fastq.gz}_${bc2}.fq"
+
+gzip "${fastq%.fastq.gz}_${bc2}.fq";
+
