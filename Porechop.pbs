@@ -1,0 +1,23 @@
+
+#PBS -N Porechop
+#PBS -r n
+#PBS -l mem=500GB,walltime=48:00:00,ncpus=9
+#PBS -m ae
+#PBS -M user@email.com
+
+#note porechop has very high memory usage
+module load Porechop/0.2.4
+
+# Amend porechop adapters.py to look for our Nanopore read extension form LOTRSeq to increase barcode recovery
+
+#  Adapter('PCR adapters 10x',
+#                   start_sequence=('PCR_10x_start', 'CTACACGACGCTCTTCCGATCT'),
+#                   end_sequence=  ('PCR_10x_end',   'AGATCGGAAGAGCGTCGTGTAG')),
+
+
+
+fastq="fastq.fastq.gz"
+
+porechop -i $fastq -o ${fastq%fastq.gz}_PC.fastq --extra_middle_trim_bad_side 0 --min_split_read_size 200 --extra_middle_trim_good_side -25 --extra_end_trim -25
+
+gzip ${fastq%fastq.gz}_PC.fastq
