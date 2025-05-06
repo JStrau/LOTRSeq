@@ -1,0 +1,18 @@
+#PBS -N SiCeLoRe_BC_Split
+#PBS -r n
+#PBS -l mem=20GB,walltime=00:30:00,ncpus=8
+#PBS -m ae
+#PBS -M jasmin.straube@qimrberghofer.edu.au
+
+
+bclist='barcodes.tsv'
+fastq="SiCeLoRe_passed.fastq.gz"
+
+tmp=$(wc -l <$bclist)
+for ((i=2; i<$tmp+1; i++))
+do
+bc2=$(eval sed -n "$i,1p" $bclist)
+zgrep -A 3 "cellBC=${bc2%?}" $fastq | sed '/^--$/d' > "${fastq%.fastq.gz}_${bc2%?}.fq"
+gzip "${fastq%.fastq.gz}_${bc2%?}.fq";
+done
+
