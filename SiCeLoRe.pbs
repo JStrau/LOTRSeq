@@ -1,0 +1,11 @@
+
+#PBS -N SiCeLoRe
+#PBS -r n
+#PBS -l mem=80GB,walltime=48:00:00,ncpus=8
+#PBS -m ae
+#PBS -M user@email.com
+
+
+module load SiCeLoRe/2.1
+
+java -jar -Xmx40g SiCeLoRe/sicelore-2.1/Jar/NanoporeBC_UMI_finder-2.1.jar scanfastq -d ../fastq -o ../SiCeLoRe/ -g ../barcodes.tsv --bcEditDistance 2
