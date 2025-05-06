@@ -1,0 +1,5 @@
+
+module load python/3.6.1
+
+blaze fastq --no-whitelisting --known-bc-list barcodes.tsv --threads 8 --output-prefix Blaze/ --output-fastq Blaze_BC_EC2_matches.fastq.gz
+
