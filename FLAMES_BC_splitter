@@ -1,0 +1,27 @@
+
+#PBS -N FLAMES_BC_splitter
+#PBS -r n
+#PBS -l mem=50GB,walltime=48:00:00,ncpus=8
+#PBS -m ae
+#PBS -M user@email.com
+
+
+module load seqtk/1.3
+
+fastq="FLAMES_EC2_matches.fastq.gz"
+bclist="Barcodes.tsv"
+
+
+tmp=$(wc -l <$bclist)
+for ((i=2; i<$tmp+1; i++))
+do
+sed -n "$i,1p" $bclist > bc
+
+bc2=$(eval sed -n "$i,1p" $bclist)
+
+seqtk subseq $fastq bc > "${fastq%.fastq.gz}_${bc2%?}.fq" ;
+
+gzip "${fastq%.fastq.gz}_${bc2%?}.fq";
+
+done
+
