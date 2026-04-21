@@ -2,7 +2,7 @@
 #PBS -r n
 #PBS -l mem=20GB,walltime=00:30:00,ncpus=8
 #PBS -m ae
-#PBS -M jasmin.straube@qimrberghofer.edu.au
+#PBS -M user@email.edu.au
 
 
 bclist='barcodes.tsv'
