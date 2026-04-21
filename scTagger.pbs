@@ -3,7 +3,7 @@
 #PBS -r n
 #PBS -l mem=50GB,walltime=48:00:00,ncpus=8
 #PBS -m ae
-#PBS -M jasmin.straube@qimrberghofer.edu.au
+#PBS -M user@email.edu.au
 
 
 module load miniconda3/current
