@@ -1,0 +1,19 @@
+###########
+#PBS -N fast5toPod5
+#PBS -l ncpus=8,mem=200GB,walltime=48:00:00
+#PBS -m ae
+#PBS -M user@email.com
+###########
+
+
+#19GB fastq
+#resources_used.cpupercent=761,resources_used.cput=11:32:10,resources_used.mem=103,697,892kb,resources_used.walltime=01:35:54
+
+
+module load python/3.9.13
+
+
+parent='/path/to/fast5'
+filepath='path/to/fast5/*fast5'
+
+pod5 convert fast5 -t 8 $filepath --output . --one-to-one $parent
